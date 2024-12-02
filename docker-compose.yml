@@ -1,0 +1,55 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www/html
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  web:
+    image: nginx:${NGINX_VERSION:-alpine}
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - .docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "${APP_PORT:-8081}:80"
+    depends_on:
+      - php
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:${MYSQL_VERSION:-8}
+    environment:
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD:-secret}'
+      MYSQL_USER: '${DB_USERNAME:-secret}'
+      MYSQL_PASSWORD: '${DB_PASSWORD:-secret}'
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+      - mysqldata:/var/lib/mysql
+    ports:
+      - "${MYSQL_PORT:-3307}:3306"
+    restart: unless-stopped
+
+  # node:
+  #   image: node:${NODE_VERSION:-alpine}
+  #   user: node
+  #   working_dir: /assets
+  #   volumes:
+  #     - ./:/assets
+  #   command: npm run watch
+  #   restart: unless-stopped
+
+  redis:
+    image: redis:${REDIS_VERSION:-alpine}
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+
+volumes:
+  mysqldata:
+  redisdata:
