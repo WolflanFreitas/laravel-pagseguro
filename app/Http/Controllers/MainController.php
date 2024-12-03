@@ -9,8 +9,6 @@ class MainController extends Controller
     //
     public function index()
     {
-
-
         $pagSeguro = new \App\Service\PagSeguro();
 
         $paymentParams = [
@@ -36,5 +34,14 @@ class MainController extends Controller
         ];
         
         $checkout = $pagSeguro->createCheckout($paymentParams);
+
+        $payment = \App\Models\Payment::create([
+            'code' => $checkout['code'],
+            'reference_id' => $checkout['reference_id'],
+            'status' => 'WAITING',
+            'payment_link' => $checkout['payment_link']
+        ]);
+
+        dd($payment);
     }
 }

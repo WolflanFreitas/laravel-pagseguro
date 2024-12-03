@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->string('code');
+            $table->string('reference_id');
+            $table->string('payment_link');
+            $table->enum('status', ['WAITING', 'CANCELED', 'DECLINED', 'IN_ANALYSIS', 'PAID']);
             $table->timestamps();
         });
     }
