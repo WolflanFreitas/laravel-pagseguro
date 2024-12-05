@@ -34,8 +34,8 @@ class PagSeguro
             'items' => $paymentParams['items'],
             'soft_descriptor' => 'SescMA',
             'redirect_url' => $redirectUrl,
-            'notification_urls' => ['https://vendas.sescma.com.br'],
-            'payment_notification_urls' => ['https://vendas.sescma.com.br']
+            'notification_urls' => ['https://hn7sdi.tunnel.pyjam.as/api/notification'],
+            'payment_notification_urls' => ['https://hn7sdi.tunnel.pyjam.as/api/payment-notification'],
         ];
 
         $response = $client->request('POST', $url, [

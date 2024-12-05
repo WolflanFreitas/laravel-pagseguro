@@ -44,4 +44,33 @@ class MainController extends Controller
 
         dd($payment);
     }
+
+    public function notification(Request $request)
+    {
+        // Escrever em log o retorno da notificação do PagSeguro
+        \Log::info('Notificação recebida');
+        \Log::info(json_decode($request->all()));
+    }
+
+    public function paymentNotification(Request $request)
+    {
+        \Log::info('Notificação de pagamento recebida');
+        \Log::info('Dados recebidos', ['data' => $request->all()]);
+
+        $orderId = $request->input('id');
+        $referenceId = $request->input('reference_id');
+        $chargeStatus = $request->input('charges.0.status');
+        $chargeCode = $request->input('charges.0.id');
+        $paymentMethod = $request->input('charges.0.payment_method.type');
+
+        \Log::info("Pedido processado", [
+            'order_id' => $orderId,
+            'reference_id' => $referenceId,
+            'charge_status' => $chargeStatus,
+            'charge_code' => $chargeCode,
+            'payment_method' => $paymentMethod
+        ]);
+
+        return response()->json(['message' => 'Notificação processada com sucesso'], 200);
+    }
 }
