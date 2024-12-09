@@ -20,10 +20,14 @@ class PagSeguro
             $url = config('pagseguro.sandbox.url');
             $token = config('pagseguro.sandbox.token');
             $redirectUrl = config('pagseguro.sandbox.redirect_url');
+            $notificationUrl = config('pagseguro.sandbox.notification_url');
+            $paymentNotificationUrl = config('pagseguro.sandbox.payment_notification_url');
         } else {
             $url = config('pagseguro.production.url');
             $token = config('pagseguro.production.token');
             $redirectUrl = config('pagseguro.production.redirect_url');
+            $notificationUrl = config('pagseguro.production.notification_url');
+            $paymentNotificationUrl = config('pagseguro.production.payment_notification_url');
         }
 
         $body = [
@@ -32,10 +36,16 @@ class PagSeguro
             'expiration_date' => $expirationDate,
             'customer_modifiable' => false,
             'items' => $paymentParams['items'],
+            'payment_methods' => [
+                ['type' => 'CREDIT_CARD'],
+                ['type' => 'DEBIT_CARD'],
+                // ['type' => 'BOLETO'],
+                ['type' => 'PIX'],
+            ],
             'soft_descriptor' => 'SescMA',
             'redirect_url' => $redirectUrl,
-            'notification_urls' => ['https://hn7sdi.tunnel.pyjam.as/api/notification'],
-            'payment_notification_urls' => ['https://hn7sdi.tunnel.pyjam.as/api/payment-notification'],
+            'notification_urls' => [$notificationUrl],
+            'payment_notification_urls' => [$paymentNotificationUrl],
         ];
 
         $response = $client->request('POST', $url, [
@@ -48,7 +58,8 @@ class PagSeguro
         ]);
 
         $response = json_decode($response->getBody()->getContents());
-
+        
+        dd($response);
         $checkout = [
             'payment_link' => $response->links[1]->href,
             'reference_id' => $response->reference_id,
