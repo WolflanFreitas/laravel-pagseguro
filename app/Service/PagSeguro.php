@@ -59,7 +59,6 @@ class PagSeguro
 
         $response = json_decode($response->getBody()->getContents());
         
-        dd($response);
         $checkout = [
             'payment_link' => $response->links[1]->href,
             'reference_id' => $response->reference_id,
