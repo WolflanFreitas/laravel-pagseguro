@@ -71,6 +71,24 @@ class MainController extends Controller
             'payment_method' => $paymentMethod
         ]);
 
+        $payment = \App\Models\Payment::where('reference_id', $referenceId)->first();
+
+        if ($payment && $chargeStatus === 'PAID') {
+            $payment->status = 'PAID';
+            $payment->save();
+        } elseif ($payment && $chargeStatus === 'CANCELED') {
+            $payment->status = 'CANCELED';
+            $payment->save();
+        } elseif ($payment && $chargeStatus === 'IN_ANALYSIS') {
+            $payment->status = 'IN_ANALYSIS';
+            $payment->save();
+        } elseif ($payment && $chargeStatus === 'DECLINED') {
+            $payment->status = 'DECLINED';
+            $payment->save();
+        } else {
+            \Log::info('Pagamento não encontrado');
+        }
+
         return response()->json(['message' => 'Notificação processada com sucesso'], 200);
     }
 }
